@@ -22,7 +22,6 @@ COGS = [
     "cogs.videos",
     "cogs.encuestas",
     "cogs.instrucciones",
-    "cogs.ortografia",
 ]
 
 intents = discord.Intents.default()
