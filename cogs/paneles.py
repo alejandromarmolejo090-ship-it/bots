@@ -948,9 +948,8 @@ class AnuncioSeleccionView(discord.ui.View):
 
         self._btn_redactar = discord.ui.Button(
             label="✏️ Redactar Anuncio",
-            style=discord.ButtonStyle.secondary,
+            style=discord.ButtonStyle.primary,
             row=3,
-            disabled=True,
         )
         self._btn_redactar.callback = self._cb_redactar
         self.add_item(self._btn_redactar)
@@ -980,10 +979,21 @@ class AnuncioSeleccionView(discord.ui.View):
 
     def _refresh_redactar(self):
         ready = bool(self._tipo and self._mencion)
-        self._btn_redactar.disabled = not ready
-        self._btn_redactar.style = discord.ButtonStyle.success if ready else discord.ButtonStyle.secondary
+        self._btn_redactar.style = discord.ButtonStyle.success if ready else discord.ButtonStyle.primary
 
     async def _cb_redactar(self, interaction: discord.Interaction):
+        if not self._tipo and not self._mencion:
+            return await interaction.response.send_message(
+                "❌ Falta elegir el **tipo** de anuncio y la **mención**.", ephemeral=True
+            )
+        if not self._tipo:
+            return await interaction.response.send_message(
+                "❌ Falta elegir el **tipo** de anuncio (🚨 Urgente / ⚔️ Operacional / 🎉 Evento / 📢 General).", ephemeral=True
+            )
+        if not self._mencion:
+            return await interaction.response.send_message(
+                "❌ Falta elegir la **mención** (@everyone / @here / Sin mención).", ephemeral=True
+            )
         await interaction.response.send_modal(AnuncioModal(self._tipo, self._mencion, self._canal_id))
 
     def _embed(self) -> discord.Embed:
