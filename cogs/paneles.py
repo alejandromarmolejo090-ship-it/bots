@@ -19,6 +19,13 @@ CANAL_FOTOS_ID           = int(os.getenv("CANAL_FOTOS_ID", "0"))
 JERARQUIA = ["Civil", "Aspirante", "Recluta", "Soldado Raso", "Soldado", "Cabo", "Cabo Primero", "Coronel"]
 BANNER_DEFAULT = "https://i.imgur.com/4M34hi2.png"
 
+TIPOS_ANUNCIO = {
+    "urgente":     ("🚨", "URGENTE",      0xCC2222),
+    "operacional": ("⚔️", "OPERACIONAL",  COLOR_MILITAR),
+    "evento":      ("🎉", "EVENTO",        0xB48C14),
+    "general":     ("📢", "GENERAL",       0x1E3A5F),
+}
+
 # Zonas horarias relativas a Colombia (UTC-5)
 ZONAS = [
     ("🇲🇽", "México",            datetime.timedelta(hours=-1)),
@@ -846,6 +853,170 @@ class ConfirmarAsistencia(discord.ui.View):
 
 
 # ══════════════════════════════════════════════════════
+#  MODAL + VIEW: PANEL DE ANUNCIOS
+# ══════════════════════════════════════════════════════
+
+class AnuncioModal(discord.ui.Modal):
+    titulo    = discord.ui.TextInput(label="Título (opcional)", max_length=100, required=False)
+    contenido = discord.ui.TextInput(label="Contenido del anuncio", style=discord.TextStyle.paragraph, max_length=1000)
+    imagen    = discord.ui.TextInput(label="URL de imagen (opcional)", max_length=500, required=False)
+
+    def __init__(self, tipo_key: str, mencion_key: str, canal_id=None):
+        emoji, label, _ = TIPOS_ANUNCIO[tipo_key]
+        super().__init__(title=f"{emoji} Anuncio {label.capitalize()}")
+        self._tipo_key    = tipo_key
+        self._mencion_key = mencion_key
+        self._canal_id    = canal_id
+
+    async def on_submit(self, interaction: discord.Interaction):
+        emoji, label, color = TIPOS_ANUNCIO[self._tipo_key]
+        menciones = {"everyone": "@everyone", "here": "@here", "none": ""}
+        mencion_content = menciones.get(self._mencion_key, "")
+
+        canal_destino = None
+        if self._canal_id:
+            canal_destino = interaction.guild.get_channel(self._canal_id)
+        if not canal_destino:
+            canal_destino = interaction.guild.get_channel(CANAL_ANUNCIOS_ID)
+        if not canal_destino:
+            canal_destino = interaction.channel
+
+        titulo_val = self.titulo.value.strip() or f"Anuncio {label.capitalize()}"
+        embed = discord.Embed(
+            title=f"{emoji}  {titulo_val.upper()}",
+            description=self.contenido.value,
+            color=color,
+            timestamp=datetime.datetime.now(),
+        )
+        embed.set_footer(text=f"Publicado por {interaction.user.display_name} · Clan Lord")
+        if self.imagen.value.strip():
+            embed.set_image(url=self.imagen.value.strip())
+
+        allowed = (
+            discord.AllowedMentions(everyone=True)
+            if self._mencion_key in ("everyone", "here")
+            else discord.AllowedMentions.none()
+        )
+        await canal_destino.send(
+            content=mencion_content or None,
+            embed=embed,
+            allowed_mentions=allowed,
+        )
+        await interaction.response.send_message(
+            f"✅ Anuncio **{label.capitalize()}** publicado en {canal_destino.mention}.", ephemeral=True
+        )
+
+
+class AnuncioSeleccionView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=180)
+        self._tipo    = None
+        self._mencion = None
+
+        self._btns_tipo = {}
+        for key, (emoji, label, _) in TIPOS_ANUNCIO.items():
+            btn = discord.ui.Button(
+                label=f"{emoji} {label.capitalize()}",
+                style=discord.ButtonStyle.secondary,
+                row=0,
+            )
+            btn.callback = self._make_tipo_cb(key)
+            self._btns_tipo[key] = btn
+            self.add_item(btn)
+
+        self._btns_mencion = {}
+        for key, emoji, label in [("everyone", "🔴", "@everyone"), ("here", "🟡", "@here"), ("none", "⚪", "Sin mención")]:
+            btn = discord.ui.Button(
+                label=f"{emoji} {label}",
+                style=discord.ButtonStyle.secondary,
+                row=1,
+            )
+            btn.callback = self._make_mencion_cb(key)
+            self._btns_mencion[key] = btn
+            self.add_item(btn)
+
+        self._canal_id = None
+        chan_sel = discord.ui.ChannelSelect(
+            placeholder="📌 Canal destino (dejar vacío = #anuncios por defecto)",
+            channel_types=[discord.ChannelType.text],
+            min_values=0,
+            max_values=1,
+            row=2,
+        )
+        chan_sel.callback = self._cb_canal
+        self.add_item(chan_sel)
+
+        self._btn_redactar = discord.ui.Button(
+            label="✏️ Redactar Anuncio",
+            style=discord.ButtonStyle.secondary,
+            row=3,
+            disabled=True,
+        )
+        self._btn_redactar.callback = self._cb_redactar
+        self.add_item(self._btn_redactar)
+
+    def _make_tipo_cb(self, key: str):
+        async def cb(interaction: discord.Interaction):
+            self._tipo = key
+            for k, btn in self._btns_tipo.items():
+                btn.style = discord.ButtonStyle.success if k == key else discord.ButtonStyle.secondary
+            self._refresh_redactar()
+            await interaction.response.edit_message(embed=self._embed(), view=self)
+        return cb
+
+    def _make_mencion_cb(self, key: str):
+        async def cb(interaction: discord.Interaction):
+            self._mencion = key
+            for k, btn in self._btns_mencion.items():
+                btn.style = discord.ButtonStyle.success if k == key else discord.ButtonStyle.secondary
+            self._refresh_redactar()
+            await interaction.response.edit_message(embed=self._embed(), view=self)
+        return cb
+
+    async def _cb_canal(self, interaction: discord.Interaction):
+        values = interaction.data.get("values", [])
+        self._canal_id = int(values[0]) if values else None
+        await interaction.response.edit_message(embed=self._embed(), view=self)
+
+    def _refresh_redactar(self):
+        ready = bool(self._tipo and self._mencion)
+        self._btn_redactar.disabled = not ready
+        self._btn_redactar.style = discord.ButtonStyle.success if ready else discord.ButtonStyle.secondary
+
+    async def _cb_redactar(self, interaction: discord.Interaction):
+        await interaction.response.send_modal(AnuncioModal(self._tipo, self._mencion, self._canal_id))
+
+    def _embed(self) -> discord.Embed:
+        tipo_info = TIPOS_ANUNCIO.get(self._tipo)
+        if tipo_info:
+            t_emoji, t_label, t_color = tipo_info
+            tipo_str = f"{t_emoji} **{t_label.capitalize()}**"
+            color    = t_color
+        else:
+            tipo_str = "*Sin seleccionar*"
+            color    = COLOR_MILITAR
+
+        men_map     = {"everyone": "🔴 @everyone", "here": "🟡 @here", "none": "⚪ Sin mención"}
+        mencion_str = men_map.get(self._mencion, "*Sin seleccionar*")
+        canal_str   = f"<#{self._canal_id}>" if self._canal_id else "*#anuncios (por defecto)*"
+
+        e = discord.Embed(
+            title="📢  PANEL DE ANUNCIOS",
+            description=(
+                "✅ Todo listo — pulsa **✏️ Redactar Anuncio** para continuar."
+                if (self._tipo and self._mencion)
+                else "Elige el **tipo de anuncio** y la **mención** para continuar."
+            ),
+            color=color,
+        )
+        e.add_field(name="📌 Tipo", value=tipo_str, inline=True)
+        e.add_field(name="🔔 Mención", value=mencion_str, inline=True)
+        e.add_field(name="📡 Canal", value=canal_str, inline=True)
+        e.set_footer(text="Solo tú ves este panel · Expira en 3 minutos")
+        return e
+
+
+# ══════════════════════════════════════════════════════
 #  VIEW: PANEL DE MANDO
 # ══════════════════════════════════════════════════════
 
@@ -948,6 +1119,13 @@ class PanelMandoView(discord.ui.View):
         if not self._mando(interaction):
             return await interaction.response.send_message("❌ Sin permiso.", ephemeral=True)
         await interaction.response.send_modal(ConfigCanalModal())
+
+    @discord.ui.button(label="📢 Anuncio", style=discord.ButtonStyle.primary, custom_id="gl_mando_anuncio", row=3)
+    async def crear_anuncio(self, interaction: discord.Interaction, _: discord.ui.Button):
+        if not self._mando(interaction):
+            return await interaction.response.send_message("❌ Sin permiso.", ephemeral=True)
+        view = AnuncioSeleccionView()
+        await interaction.response.send_message(embed=view._embed(), view=view, ephemeral=True)
 
     @discord.ui.button(label="🎓 Gestionar Cursos", style=discord.ButtonStyle.primary, custom_id="gl_mando_cursos", row=4)
     async def gestionar_cursos(self, interaction: discord.Interaction, _: discord.ui.Button):
@@ -1086,6 +1264,17 @@ class PanelMandoView(discord.ui.View):
             value=(
                 "Pega el **ID del canal** donde quieres que aparezca el Panel de Miembros.\n"
                 "→ El bot publica allí el panel automáticamente. Si ya existe uno, lo edita."
+            ),
+            inline=False,
+        )
+        e2.add_field(
+            name="📢 Anuncio",
+            value=(
+                "Abre el **panel de anuncios** — elige tipo y mención antes de redactar:\n"
+                "• **Tipos**: 🚨 Urgente · ⚔️ Operacional · 🎉 Evento · 📢 General\n"
+                "• **Menciones**: 🔴 @everyone · 🟡 @here · ⚪ Sin mención\n"
+                "→ Con ambos seleccionados pulsa **✏️ Redactar Anuncio** — rellena título, "
+                "contenido, canal destino (opcional) e imagen (opcional) y se publica al instante."
             ),
             inline=False,
         )
@@ -1365,7 +1554,7 @@ async def publicar_panel_mando(guild: discord.Guild):
             "**⚫ Fila 3 — General**\n"
             "> 🏆 Torneo  ·  📊 Estado  ·  🖼️ Imagen Calendario\n\n"
             "**🟣 Fila 4 — Entrenamientos y Configuración**\n"
-            "> 🎯 Crear Entrenamiento  ·  🗺️ Briefing de Misión  ·  ⚙️ Canal Miembros\n\n"
+            "> 🎯 Crear Entrenamiento  ·  🗺️ Briefing de Misión  ·  ⚙️ Canal Miembros  ·  📢 Anuncio\n\n"
             "**🔴 Fila 5 — Administración**\n"
             "> 🎓 Gestionar Cursos  ·  📊 Crear Encuesta  ·  🗑️ Limpiar Canal  ·  📖 Instrucciones"
         ),

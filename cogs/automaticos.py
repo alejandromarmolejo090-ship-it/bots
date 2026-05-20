@@ -13,6 +13,8 @@ CANAL_OPERACIONES_ID     = int(os.getenv("CANAL_OPERACIONES_ID", "0"))
 CANAL_ENTRENAMIENTOS_ID  = int(os.getenv("CANAL_ENTRENAMIENTOS_ID", "0"))
 CANAL_BRIEFING_ID        = int(os.getenv("CANAL_BRIEFING_ID", "0"))
 CANAL_ANUNCIOS_ID        = int(os.getenv("CANAL_ANUNCIOS_ID", "0"))
+CANAL_FOTOS_ID           = int(os.getenv("CANAL_FOTOS_ID", "0"))
+CANAL_VIDEOS_ID          = int(os.getenv("CANAL_VIDEOS_ID", "0"))
 
 REGANOS_CANAL = [
     "🎖️ {mention} ¡SILENCIO, MIERDA! Este canal es zona restringida. ¡Un paso atrás antes de que te ponga a limpiar letrinas con la lengua!",
@@ -514,6 +516,8 @@ class Automaticos(commands.Cog):
             CANAL_ANUNCIOS_ID,
             CANAL_FRASES_ID,
             CANAL_BOLETIN_ID,
+            CANAL_FOTOS_ID,
+            CANAL_VIDEOS_ID,
         }
 
         if message.channel.id not in CANALES_RESTRINGIDOS:
