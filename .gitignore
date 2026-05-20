@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+*.log
+bot_out.txt
+bot_err*.txt
+bot_log.txt
+render.yaml

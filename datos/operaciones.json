@@ -1,0 +1,19 @@
+{
+    "4d53087b": {
+        "nombre": "Operacion Gonorra",
+        "fecha": "11/09/37",
+        "hora": "40:00",
+        "mapa": "turkikata",
+        "descripcion": "Mision para hoy chicas",
+        "confirmados": [
+            "536641088526614538",
+            "755522154161766611",
+            "640643442757861393",
+            "977292288306847745"
+        ],
+        "creador": "1356652124016214228",
+        "message_id": "1506539081176187002",
+        "channel_id": "1406852042621714554",
+        "fecha_creacion": "2026-05-20T01:07:38.549995"
+    }
+}

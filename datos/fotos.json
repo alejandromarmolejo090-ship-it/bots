@@ -1,0 +1,120 @@
+{
+    "1506554607025782805": {
+        "uploader_id": "1356652124016214228",
+        "categoria": "epico",
+        "channel_id": "1506554451950047252",
+        "img_filename": "Captura_de_pantalla_2026-05-20_015329.png",
+        "fecha": "20/05/2026 02:09",
+        "votos": {
+            "1356652124016214228": "fire"
+        },
+        "hall_of_fame": false
+    },
+    "1506595286464860180": {
+        "uploader_id": "640643442757861393",
+        "categoria": "operacion",
+        "channel_id": "1506554451950047252",
+        "img_filename": "Screenshot_20260520-055039.Discord.png",
+        "fecha": "20/05/2026 04:50",
+        "votos": {
+            "1356652124016214228": "fire"
+        },
+        "hall_of_fame": false
+    },
+    "1506667871135203440": {
+        "uploader_id": "323704927937363969",
+        "categoria": "entrenamiento",
+        "channel_id": "1506554451950047252",
+        "img_filename": "20260518194752_1.jpg",
+        "fecha": "20/05/2026 09:39",
+        "votos": {},
+        "hall_of_fame": false
+    },
+    "1506668284387266620": {
+        "uploader_id": "323704927937363969",
+        "categoria": "entrenamiento",
+        "channel_id": "1506554451950047252",
+        "img_filename": "20260519231935_1.jpg",
+        "fecha": "20/05/2026 09:41",
+        "votos": {
+            "379476739438542849": "fire",
+            "1356652124016214228": "fire"
+        },
+        "hall_of_fame": false
+    },
+    "1506668383222108302": {
+        "uploader_id": "323704927937363969",
+        "categoria": "meme",
+        "channel_id": "1506554451950047252",
+        "img_filename": "image.png",
+        "fecha": "20/05/2026 09:41",
+        "votos": {},
+        "hall_of_fame": false
+    },
+    "1506668632166633642": {
+        "uploader_id": "323704927937363969",
+        "categoria": "entrenamiento",
+        "channel_id": "1506554451950047252",
+        "img_filename": "20260519225340_1.jpg",
+        "fecha": "20/05/2026 09:42",
+        "votos": {},
+        "hall_of_fame": false
+    },
+    "1506668749225463939": {
+        "uploader_id": "323704927937363969",
+        "categoria": "operacion",
+        "channel_id": "1506554451950047252",
+        "img_filename": "20260518201645_1.jpg",
+        "fecha": "20/05/2026 09:42",
+        "votos": {
+            "1429459883752685579": "good"
+        },
+        "hall_of_fame": false
+    },
+    "1506668922810929275": {
+        "uploader_id": "323704927937363969",
+        "categoria": "entrenamiento",
+        "channel_id": "1506554451950047252",
+        "img_filename": "20260520002418_1.jpg",
+        "fecha": "20/05/2026 09:43",
+        "votos": {
+            "1429459883752685579": "fire"
+        },
+        "hall_of_fame": false
+    },
+    "1506707005421916200": {
+        "uploader_id": "1429459883752685579",
+        "categoria": "meme",
+        "channel_id": "1506554451950047252",
+        "img_filename": "Screenshot_2026-05-20-09-45-24-790_com.discord.jpg",
+        "fecha": "20/05/2026 12:14",
+        "votos": {},
+        "hall_of_fame": false
+    },
+    "1506710686674194473": {
+        "uploader_id": "605180864896172047",
+        "categoria": "meme",
+        "channel_id": "1506554451950047252",
+        "img_filename": "image.png",
+        "fecha": "20/05/2026 12:29",
+        "votos": {
+            "944072335235874816": "fire",
+            "1429459883752685579": "fire",
+            "1356652124016214228": "fire"
+        },
+        "hall_of_fame": false
+    },
+    "1506711726157074432": {
+        "uploader_id": "944072335235874816",
+        "categoria": "meme",
+        "channel_id": "1506554451950047252",
+        "img_filename": "Screenshot_20260520_123356_Discord.jpg",
+        "fecha": "20/05/2026 12:33",
+        "votos": {
+            "1429459883752685579": "fire",
+            "977292288306847745": "fire",
+            "1356652124016214228": "fire"
+        },
+        "hall_of_fame": false
+    }
+}

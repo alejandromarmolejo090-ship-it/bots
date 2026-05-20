@@ -1,0 +1,10 @@
+{
+    "Civil": [],
+    "Aspirante": [],
+    "Recluta": ["M4A1 (fusilero básico)", "AKM (fusilero básico)", "M9 Pistol"],
+    "Soldado Raso": ["M4A1", "AKM", "MP5", "M9 Pistol", "M67 Granada"],
+    "Soldado": ["M4A1 ACOG", "AKM", "MP5", "HK416", "M9 Pistol", "M67 Granada", "Smoke Granada"],
+    "Cabo": ["HK416", "M4A1 ACOG", "MP5", "Mk18", "M9 Pistol", "M67 Granada", "Smoke Granada"],
+    "Cabo Primero": ["HK416", "Mk18", "MP5", "M4A1 ACOG", "M9 Pistol", "M67 Granada", "Smoke Granada", "NLAW (con autorización)"],
+    "Coronel": ["Cualquier arma reglamentaria de la unidad con autorización del mando"]
+}

@@ -1,0 +1,35 @@
+{
+    "usuarios": {
+        "1356652124016214228": {
+            "completados": [
+                "basico",
+                "medico"
+            ],
+            "intentos": {
+                "basico": 2,
+                "medico": 1
+            },
+            "ultimo_intento": {
+                "basico": "20/05/2026 04:20",
+                "medico": "20/05/2026 04:25"
+            }
+        },
+        "605180864896172047": {
+            "completados": [],
+            "intentos": {
+                "basico": 1
+            },
+            "ultimo_intento": {
+                "basico": "20/05/2026 12:35"
+            }
+        }
+    },
+    "dudas": {
+        "1506591139719938082": {
+            "tipo": "drones",
+            "estudiante_id": "1356652124016214228",
+            "instructor_id": "1356652124016214228",
+            "puntos": 10
+        }
+    }
+}
